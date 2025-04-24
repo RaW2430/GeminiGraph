@@ -1,1 +1,2 @@
+测试语句：./toolkits/cc ./graph/graph.binedgelist 6 
 cnr-2000 节点数：325557

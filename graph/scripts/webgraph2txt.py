@@ -1,7 +1,10 @@
 import struct
 
-input_file = "../cnr-2000.graph"  # 替换为你的 .graph 文件路径
-output_file = "../cnr-2000.txt"       # 输出的 .txt 文件路径
+# input_file = "../cnr-2000.graph"  # 替换为你的 .graph 文件路径
+# output_file = "../cnr-2000.txt"       # 输出的 .txt 文件路径
+
+input_file = "../twitter-2010.graph"  # 替换为你的 .graph 文件路径
+output_file = "../twitter-2010.txt"       # 输出的 .txt 文件路径
 
 with open(input_file, "rb") as fin, open(output_file, "w") as fout:
     while True:

@@ -2,8 +2,9 @@ import struct
 
 # input_file = "../cnr-2000-reindex.txt"
 # output_file = "../cnr-2000.binedgelist"
-input_file = "../graph1.txt"
-output_file = "../graph1.binedgelist"
+
+input_file = "../twitter-2010.graph"  # 替换为你的 .graph 文件路径
+output_file = "../twitter-2010.txt"       # 输出的 .txt 文件路径
 
 with open(input_file, "r") as fin, open(output_file, "wb") as fout:
     for line in fin:
