@@ -28,3 +28,6 @@ https://law.di.unimi.it/datasets.php
 ![](https://notes.sjtu.edu.cn/uploads/upload_a260a909a87be0e869a4a092f9e18e61.png)
 3. 其他报错 ./toolkits/pagerank ./graph/cnr-2000.binedgelist 269338 10
 ![](https://notes.sjtu.edu.cn/uploads/upload_aaf6a3f037ca91d5f99bf3970c42c8d7.png)
+解决方法：删除openmpi, 安装mpich
+sudo apt-get remove  libopenmpi-dev openmpi-bin
+sudo apt-get install  libmpich-dev openmpi-bin
