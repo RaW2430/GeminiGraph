@@ -1,6 +1,9 @@
 import struct
 
-input_file = "../cnr-2000-reindex.txt"
+# input_file = "../graph1.txt"
+# output_file = "../graph1.binedgelist"
+
+input_file = "../cnr-2000.txt"
 output_file = "../cnr-2000.binedgelist"
 
 # input_file = "../twitter-2010.graph"  # 替换为你的 .graph 文件路径
@@ -13,3 +16,4 @@ with open(input_file, "r") as fin, open(output_file, "wb") as fout:
             if len(parts) == 2:
                 u, v = map(int, parts)
                 fout.write(struct.pack("<II", u, v))
+    fout.write(b'\0')

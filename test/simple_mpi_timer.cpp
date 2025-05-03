@@ -1,7 +1,7 @@
 #include <iostream>
-#include <mpi.h>
 #include <unistd.h>  // for sleep()
 #include <chrono>    // for timing
+#include <mpi.h>
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);

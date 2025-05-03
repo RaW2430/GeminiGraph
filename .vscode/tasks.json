@@ -2,11 +2,13 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: mpicc build active file",
-            "command": "/usr/bin/mpicc",
+            "label": "C/C++: g++ build active file",
+            "command": "/usr/bin/g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                "-I/usr/lib/x86_64-linux-gnu/openmpi/include",   // 包含头文件路径
+                "-L/usr/lib/x86_64-linux-gnu/openmpi/lib",        // 指定库文件路径
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"

@@ -5,13 +5,13 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include/**",
-                "/usr/lib/x86_64-linux-gnu/openmpi/include",  // OpenMPI 路径
-                "/usr/lib/x86_64-linux-gnu/mpich/include/"                         // MPICH 路径
+                "/usr/lib/x86_64-linux-gnu/openmpi/include",
+                "/usr/lib/x86_64-linux-gnu/mpich/include/"  
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/mpicc",  // 使用 MPI 编译器
-            "cStandard": "c11",
-            "cppStandard": "c++17",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64",
             "configurationProvider": "ms-vscode.makefile-tools"
         }
