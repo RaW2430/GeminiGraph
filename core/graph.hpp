@@ -101,8 +101,8 @@ template <typename EdgeData = Empty>
 class Graph
 {
 public:
-  int partition_id;
-  int partitions;
+  int partition_id; // 分区 id
+  int partitions; // 分区数
 
   size_t alpha;
 
@@ -154,6 +154,8 @@ public:
   {
     threads = numa_num_configured_cpus();
     sockets = numa_num_configured_nodes();
+    printf("threads: %d\n", threads);
+    printf("sockets: %d\n", sockets);
     threads_per_socket = threads / sockets;
 
     init();
@@ -169,15 +171,19 @@ public:
     return thread_id % threads_per_socket;
   }
 
+  // 初始化 edge_data_size, unit_size, edge_unit_size, NUMA 和 OpenMPI
   void init()
   {
-    edge_data_size = std::is_same<EdgeData, Empty>::value ? 0 : sizeof(EdgeData);
-    unit_size = sizeof(VertexId) + edge_data_size;
-    edge_unit_size = sizeof(VertexId) + unit_size;
+    edge_data_size = std::is_same<EdgeData, Empty>::value ? 0 : sizeof(EdgeData); // 边的权？
+    unit_size = sizeof(VertexId) + edge_data_size;   // 
+    edge_unit_size = sizeof(VertexId) + unit_size;  // 两个节点的大小 + 边的权？
 
+// NUMA
+    // 检查 NUMA 是否可用
     assert(numa_available() != -1);
     assert(sizeof(unsigned long) == 8); // assume unsigned long is 64-bit
 
+    // NUMA 节点字符串构造
     char nodestring[sockets * 2 + 1];
     nodestring[0] = '0';
     for (int s_i = 1; s_i < sockets; s_i++)
@@ -185,8 +191,10 @@ public:
       nodestring[s_i * 2 - 1] = ',';
       nodestring[s_i * 2] = '0' + s_i;
     }
+    // 将 NUMA 节点字符串解析为 NUMA 节点掩码
     struct bitmask *nodemask = numa_parse_nodestring(nodestring);
-    // origin
+
+    // NUMA 交错分配内存
     // numa_set_interleave_mask(nodemask);
 
     // v1
@@ -199,8 +207,10 @@ public:
     //   fprintf(stderr, "Warning: NUMA nodemask is null. Skipping interleave mask setup.\n");
     // }
 
-    omp_set_dynamic(0);
-    omp_set_num_threads(threads);
+    // OpenMPI 配置
+    omp_set_dynamic(0); // 禁用动态线程
+    omp_set_num_threads(threads); // 设置线程数
+    // 为线程分配内存
     thread_state = new ThreadState *[threads];
     local_send_buffer_limit = 16;
     local_send_buffer = new MessageBuffer *[threads];
@@ -210,6 +220,7 @@ public:
       local_send_buffer[t_i] = (MessageBuffer *)numa_alloc_onnode(sizeof(MessageBuffer), get_socket_id(t_i));
       local_send_buffer[t_i]->init(get_socket_id(t_i));
     }
+    // 确认
 #pragma omp parallel for
     for (int t_i = 0; t_i < threads; t_i++)
     {
@@ -224,8 +235,11 @@ public:
 // printf("interleave on %s\n", nodestring);
 #endif
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &partition_id);
-    MPI_Comm_size(MPI_COMM_WORLD, &partitions);
+    // 初始化 MPI 分布式计算
+    MPI_Comm_rank(MPI_COMM_WORLD, &partition_id); // 当前将进程的分区 id
+    MPI_Comm_size(MPI_COMM_WORLD, &partitions); // 例如， mpirun -np 4 ./xxx 表示 partisions = 4
+
+    // MPI 缓冲区分配
     send_buffer = new MessageBuffer **[partitions];
     recv_buffer = new MessageBuffer **[partitions];
     for (int i = 0; i < partitions; i++)
@@ -241,8 +255,10 @@ public:
       }
     }
 
+    // alpha 权重
     alpha = 8 * (partitions - 1);
 
+    // MPI 同步
     MPI_Barrier(MPI_COMM_WORLD);
   }
 
@@ -271,12 +287,17 @@ public:
   }
 
   // deallocate a vertex array
+  // template <typename T>
+  // T *dealloc_vertex_array(T *array)
+  // {
+  //   numa_free(array, sizeof(T) * vertices);
+  // }
   template <typename T>
-  T *dealloc_vertex_array(T *array)
+  void dealloc_vertex_array(T *array)
   {
     numa_free(array, sizeof(T) * vertices);
   }
-
+  
   // allocate a numa-oblivious vertex array
   template <typename T>
   T *alloc_interleaved_vertex_array()
@@ -412,13 +433,13 @@ public:
     double prep_time = 0;
     prep_time -= MPI_Wtime();
 
-    symmetric = true;
+    symmetric = true; // 设置为无向图
 
     MPI_Datatype vid_t = get_mpi_data_type<VertexId>();
 
-    this->vertices = vertices;
-    long total_bytes = file_size(path.c_str());
-    this->edges = total_bytes / edge_unit_size;
+    this->vertices = vertices;  // 图的总节点数
+    long total_bytes = file_size(path.c_str()); // 获取图文件总字节数
+    this->edges = total_bytes / edge_unit_size; // 计算边的数量
 #ifdef PRINT_DEBUG_MESSAGES
     if (partition_id == 0)
     {
@@ -426,18 +447,19 @@ public:
     }
 #endif
 
-    EdgeId read_edges = edges / partitions;
-    if (partition_id == partitions - 1)
+    EdgeId read_edges = edges / partitions; // 每个分区的边数
+    if (partition_id == partitions - 1) // 计算最后一个分区的边数
     {
       read_edges += edges % partitions;
     }
-    long bytes_to_read = edge_unit_size * read_edges;
+    long bytes_to_read = edge_unit_size * read_edges; // 当前分区需读取的数据大小
     long read_offset = edge_unit_size * (edges / partitions * partition_id);
     long read_bytes;
     int fin = open(path.c_str(), O_RDONLY);
     EdgeUnit<EdgeData> *read_edge_buffer = new EdgeUnit<EdgeData>[CHUNKSIZE];
 
-    out_degree = alloc_interleaved_vertex_array<VertexId>();
+    // 统计出度
+    out_degree = alloc_interleaved_vertex_array<VertexId>();  
     for (VertexId v_i = 0; v_i < vertices; v_i++)
     {
       out_degree[v_i] = 0;
@@ -459,17 +481,19 @@ public:
       read_bytes += curr_read_bytes;
       EdgeId curr_read_edges = curr_read_bytes / edge_unit_size;
       // #pragma omp parallel for
+      // 每条有向边都视作无向边
       for (EdgeId e_i = 0; e_i < curr_read_edges; e_i++)
       {
         VertexId src = read_edge_buffer[e_i].src;
         VertexId dst = read_edge_buffer[e_i].dst;
-        __sync_fetch_and_add(&out_degree[src], 1);
+        __sync_fetch_and_add(&out_degree[src], 1);  
         __sync_fetch_and_add(&out_degree[dst], 1);
       }
     }
     MPI_Allreduce(MPI_IN_PLACE, out_degree, vertices, vid_t, MPI_SUM, MPI_COMM_WORLD);
 
     // locality-aware chunking
+    // 根据 alpha 权重划分
     partition_offset = new VertexId[partitions + 1];
     partition_offset[0] = 0;
     EdgeId remained_amount = edges * 2 + EdgeId(vertices) * alpha;
@@ -603,6 +627,7 @@ public:
       outgoing_adj_bitmap[s_i]->clear();
       outgoing_adj_index[s_i] = (EdgeId *)numa_alloc_onnode(sizeof(EdgeId) * (vertices + 1), s_i);
     }
+
     {
       std::thread recv_thread_dst([&]()
                                   {
@@ -706,6 +731,7 @@ public:
       printf("machine(%d) got %lu symmetric edges\n", partition_id, recv_outgoing_edges);
 #endif
     }
+    
     compressed_outgoing_adj_vertices = new VertexId[sockets];
     compressed_outgoing_adj_index = new CompressedAdjIndexUnit *[sockets];
     for (int s_i = 0; s_i < sockets; s_i++)
@@ -746,6 +772,7 @@ public:
 #endif
       outgoing_adj_list[s_i] = (AdjUnit<EdgeData> *)numa_alloc_onnode(unit_size * outgoing_edges[s_i], s_i);
     }
+    
     {
       std::thread recv_thread_dst([&]()
                                   {
@@ -845,6 +872,7 @@ public:
       }
       recv_thread_dst.join();
     }
+    
     for (int s_i = 0; s_i < sockets; s_i++)
     {
       for (VertexId p_v_i = 0; p_v_i < compressed_outgoing_adj_vertices[s_i]; p_v_i++)
@@ -854,6 +882,7 @@ public:
         outgoing_adj_index[s_i][v_i + 1] = compressed_outgoing_adj_index[s_i][p_v_i + 1].index;
       }
     }
+    
     MPI_Barrier(MPI_COMM_WORLD);
 
     incoming_edges = outgoing_edges;

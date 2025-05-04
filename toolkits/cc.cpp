@@ -24,7 +24,7 @@ void compute(Graph<Empty> *graph)
   double exec_time = 0;
   exec_time -= get_time();
 
-  VertexId *label = graph->alloc_vertex_array<VertexId>();
+  VertexId *label = graph->alloc_vertex_array<VertexId>();  // typedef uint32_t VertexId;
   VertexSubset *active_in = graph->alloc_vertex_subset();
   active_in->fill();
   VertexSubset *active_out = graph->alloc_vertex_subset();
@@ -126,6 +126,29 @@ void compute(Graph<Empty> *graph)
   delete active_out;
 }
 
+template <typename EdgeData>
+void printGraphInfo(Graph<EdgeData>* graph){
+  printf("Graph Info:\n");
+  printf("  partition_id  = %d\n", graph->partition_id);
+  printf("  partitions    = %d\n", graph->partitions);
+
+  printf("  alpha    = %lu\n", graph->alpha);
+
+  printf("  threads    = %d\n", graph->threads);
+  printf("  sockets    = %d\n", graph->sockets);
+  printf("  threads_per_socket    = %d\n", graph->threads_per_socket);
+
+  printf("  edge_data_size    = %lu\n", graph->edge_data_size);
+  printf("  unit_size    = %lu\n", graph->unit_size);
+  printf("  edge_unit_size    = %lu\n", graph->edge_unit_size);
+
+  printf("  symmetric      = %d\n", graph->symmetric);
+  printf("  vertices      = %u\n", graph->vertices);
+  printf("  edges         = %lu\n", graph->edges);
+
+}
+
+
 int main(int argc, char **argv)
 {
   MPI_Instance mpi(&argc, &argv);
@@ -138,13 +161,18 @@ int main(int argc, char **argv)
 
   Graph<Empty> *graph;
   graph = new Graph<Empty>();
-  graph->load_undirected_from_directed(argv[1], std::atoi(argv[2]));
+  // 此处将有向图转换为对称的无向图，即求弱连通分量
+  graph->load_undirected_from_directed(argv[1], std::atoi(argv[2]));  // 提取图和节点数
 
-  compute(graph);
-  for (int run = 0; run < 5; run++)
-  {
-    compute(graph);
-  }
+  // test graph 
+  printGraphInfo(graph);
+
+
+  // compute(graph);
+  // for (int run = 0; run < 5; run++)
+  // {
+  //   compute(graph);
+  // }
 
   delete graph;
   return 0;
