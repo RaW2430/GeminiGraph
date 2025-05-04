@@ -129,23 +129,18 @@ void compute(Graph<Empty> *graph)
 template <typename EdgeData>
 void printGraphInfo(Graph<EdgeData>* graph){
   printf("Graph Info:\n");
-  printf("  partition_id  = %d\n", graph->partition_id);
-  printf("  partitions    = %d\n", graph->partitions);
-
-  printf("  alpha    = %lu\n", graph->alpha);
-
-  printf("  threads    = %d\n", graph->threads);
-  printf("  sockets    = %d\n", graph->sockets);
-  printf("  threads_per_socket    = %d\n", graph->threads_per_socket);
-
-  printf("  edge_data_size    = %lu\n", graph->edge_data_size);
-  printf("  unit_size    = %lu\n", graph->unit_size);
-  printf("  edge_unit_size    = %lu\n", graph->edge_unit_size);
-
-  printf("  symmetric      = %d\n", graph->symmetric);
-  printf("  vertices      = %u\n", graph->vertices);
-  printf("  edges         = %lu\n", graph->edges);
-
+  printf("  %-20s = %d\n",  "partition_id", graph->partition_id);
+  printf("  %-20s = %d\n",  "partitions", graph->partitions);
+  printf("  %-20s = %lu\n", "alpha", graph->alpha);
+  printf("  %-20s = %d\n",  "threads", graph->threads);
+  printf("  %-20s = %d\n",  "sockets", graph->sockets);
+  printf("  %-20s = %d\n",  "threads_per_socket", graph->threads_per_socket);
+  printf("  %-20s = %lu\n", "edge_data_size", graph->edge_data_size);
+  printf("  %-20s = %lu\n", "unit_size", graph->unit_size);
+  printf("  %-20s = %lu\n", "edge_unit_size", graph->edge_unit_size);
+  printf("  %-20s = %d\n",  "symmetric", graph->symmetric);
+  printf("  %-20s = %u\n",  "vertices", graph->vertices);
+  printf("  %-20s = %lu\n", "edges", graph->edges);
 }
 
 
@@ -168,7 +163,7 @@ int main(int argc, char **argv)
   printGraphInfo(graph);
 
 
-  // compute(graph);
+  compute(graph);
   // for (int run = 0; run < 5; run++)
   // {
   //   compute(graph);

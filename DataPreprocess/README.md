@@ -21,7 +21,7 @@ Download and use
       
  3.在terminal中找到存储文件的正确目录，运行代码：java -cp "lib/*" it.unimi.dsi.webgraph.ArcListASCIIGraph uk-2007-05@100000 uk200705.txt
  
-./convert graph.txt graph.bin 可将txt转换为二进制格式
+./convert graph.txt graph.binedgelist 可将txt转换为二进制格式
 
   图文件会被转化成txt格式供后续使用，官方网站以及代码来源：https://webgraph.di.unimi.it/
   如果有自己的图文件，代替代码中的uk-2007-05@100000即可。

@@ -1,10 +1,8 @@
+// 将.txt文件的图转化为紧凑二进制格式，存储格式为[src1][dst1][src2][dst2][src3][dst3]...[srcN][dstN]
 #include <iostream>
 #include <fstream>
 #include <vector>
-
-
 #include <stdint.h>
-
 
 using namespace std;
 
