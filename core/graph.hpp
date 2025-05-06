@@ -291,6 +291,7 @@ public:
   T *dealloc_vertex_array(T *array)
   {
     numa_free(array, sizeof(T) * vertices);
+    return nullptr; // 无返回值会无限循环
   }
   
   // allocate a numa-oblivious vertex array

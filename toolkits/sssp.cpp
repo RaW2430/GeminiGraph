@@ -118,9 +118,9 @@ int main(int argc, char ** argv) {
   VertexId root = std::atoi(argv[3]);
 
   compute(graph, root);
-  for (int run=0;run<5;run++) {
-    compute(graph, root);
-  }
+  // for (int run=0;run<5;run++) {
+  //   compute(graph, root);
+  // }
 
   delete graph;
   return 0;

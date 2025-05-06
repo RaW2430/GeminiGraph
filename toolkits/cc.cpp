@@ -94,7 +94,9 @@ void compute(Graph<Empty> *graph)
         
     std::swap(active_in, active_out);
   }
-
+  
+  printf("graph->partition_id: %d\n", graph->partition_id);
+  
   exec_time += get_time();
   if (graph->partition_id == 0)
   {
@@ -160,7 +162,7 @@ int main(int argc, char **argv)
   graph->load_undirected_from_directed(argv[1], std::atoi(argv[2]));  // 提取图和节点数
 
   // test graph 
-  printGraphInfo(graph);
+  // printGraphInfo(graph);
 
 
   compute(graph);

@@ -421,13 +421,13 @@ int main(int argc, char ** argv) {
   #else
   compute(graph, root);
   #endif
-  for (int run=0;run<5;run++) {
-    #if COMPACT
-    compute_compact(graph, root);
-    #else
-    compute(graph, root);
-    #endif
-  }
+  // for (int run=0;run<5;run++) {
+  //   #if COMPACT
+  //   compute_compact(graph, root);
+  //   #else
+  //   compute(graph, root);
+  //   #endif
+  // }
 
   delete graph;
   return 0;
