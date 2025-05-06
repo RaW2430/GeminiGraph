@@ -39,7 +39,7 @@ def label_propagation(graph):
     return list(components.values())
 
 if __name__ == '__main__':
-    filename = '../cnr-2000.txt'  # 每行格式：u v （有向边）
+    filename = '../enwiki-2024.txt'  # 每行格式：u v （有向边）
     graph = load_graph(filename)
     components = label_propagation(graph)
 

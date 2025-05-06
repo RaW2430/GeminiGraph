@@ -192,7 +192,7 @@ public:
       nodestring[s_i * 2] = '0' + s_i;
     }
     // 将 NUMA 节点字符串解析为 NUMA 节点掩码
-    struct bitmask *nodemask = numa_parse_nodestring(nodestring);
+    // struct bitmask *nodemask = numa_parse_nodestring(nodestring);
 
     // NUMA 交错分配内存
     // numa_set_interleave_mask(nodemask);
@@ -287,13 +287,8 @@ public:
   }
 
   // deallocate a vertex array
-  // template <typename T>
-  // T *dealloc_vertex_array(T *array)
-  // {
-  //   numa_free(array, sizeof(T) * vertices);
-  // }
   template <typename T>
-  void dealloc_vertex_array(T *array)
+  T *dealloc_vertex_array(T *array)
   {
     numa_free(array, sizeof(T) * vertices);
   }

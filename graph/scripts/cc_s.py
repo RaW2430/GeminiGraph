@@ -32,7 +32,7 @@ def find_weakly_connected_components(graph):
     return components
 
 if __name__ == '__main__':
-    filename = '../cnr-2000.txt'  # 请将此文件路径替换为你的实际路径
+    filename = '../enwiki-2024.txt'  # 请将此文件路径替换为你的实际路径
     graph = load_graph_as_undirected(filename)
     components = find_weakly_connected_components(graph)
 

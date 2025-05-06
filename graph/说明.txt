@@ -1,3 +1,9 @@
 测试语句：./toolkits/cc ./graph/graph.binedgelist 8 
 求弱连通分量： ./toolkits/cc ./graph/cnr-2000.binedgelist 325557
-make cc
+            ./toolkits/cc ./graph/enwiki-2024.binedgelist 6790971 
+pagerank: ./toolkits/pagerank ./graph/enwiki-2024.binedgelist 6790971 20
+make ./toolkits/cc
+make ./toolkits/pagerank
+
+gdb ./toolkits/pagerank
+run ./graph/cnr-2000.binedgelist 325557 20
