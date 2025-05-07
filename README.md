@@ -10,7 +10,7 @@
 ## 2.1 数据获取
 https://law.di.unimi.it/datasets.php
 ## 2.2 数据预处理
-* 使用 java 的 WebGraph 类将 .graph 和其对应的 .properties 转化为 .txt
+* 使用 java 的 WebGraph 类将 .graph 和其对应的 .properties 转化为 .txt (.txt文件中的节点升序排序)
 * 将 .txt 转换为二进制格式（节点的二进制直接相连）
 ## 2.3 执行 
 * 在终端执行 ./toolkits/cc ./graph/enwiki-2024.binedgelist 6790971 
